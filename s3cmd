@@ -1801,6 +1801,7 @@ def cmd_sync_local2remote(args):
         _set_remote_uri(update_list, destination_base, single_file_local)
 
         if cfg.diff_info:
+            output('copy pairs: %s' % copy_pairs[0]['full_name'])
             output(u"Summary: %d local files to upload, %d files to remote copy, %d remote files to delete" % (upload_count, copy_count, remote_count))
             return EX_OK
 
