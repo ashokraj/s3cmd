@@ -202,7 +202,8 @@ def fetch_local_list(args, is_src = False, recursive = None):
         for relative_file in loc_list:
             counter += 1
             if counter % 1000 == 0:
-                info(u"[%d/%d]" % (counter, len_loc_list))
+                if not cfg.diff_info:
+                    info(u"[%d/%d]" % (counter, len_loc_list))
 
             if relative_file == '-':
                 continue
@@ -529,11 +530,13 @@ def compare_filelists(src_list, dst_list, src_remote, dst_remote):
             if 'size' in dst_list[file] and 'size' in src_list[file]:
                 if dst_list[file]['size'] != src_list[file]['size']:
                     debug(u"xfer: %s (size mismatch: src=%s dst=%s)" % (file, src_list[file]['size'], dst_list[file]['size']))
+                    info(u"xfer: %s (size mismatch: src=%s dst=%s)" % (file, src_list[file]['size'], dst_list[file]['size']))
                     attribs_match = False
 
         ## check md5
         compare_md5 = 'md5' in cfg.sync_checks
         # Multipart-uploaded files don't have a valid md5 sum - it ends with "...-nn"
+        info("attribs_match: %s, compare_md5: %s" % (attribs_match,compare_md5))
         if compare_md5:
             if (src_remote == True and '-' in src_list[file]['md5']) or (dst_remote == True and '-' in dst_list[file]['md5']):
                 compare_md5 = False
@@ -542,12 +545,15 @@ def compare_filelists(src_list, dst_list, src_remote, dst_remote):
             try:
                 src_md5 = src_list.get_md5(file)
                 dst_md5 = dst_list.get_md5(file)
+
             except (IOError, OSError):
                 # md5 sum verification failed - ignore that file altogether
                 debug(u"IGNR: %s (disappeared)" % (file))
                 warning(u"%s: file disappeared, ignoring." % (file))
                 raise
 
+
+            ## print(u"XFER: %s (md5: src=%s dst=%s)" % (file, src_md5, dst_md5))
             if src_md5 != dst_md5:
                 ## checksums are different.
                 attribs_match = False

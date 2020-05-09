@@ -1800,6 +1800,10 @@ def cmd_sync_local2remote(args):
         _set_remote_uri(local_list, destination_base, single_file_local)
         _set_remote_uri(update_list, destination_base, single_file_local)
 
+        if cfg.diff_info:
+            output(u"Summary: %d local files to upload, %d files to remote copy, %d remote files to delete" % (upload_count, copy_count, remote_count))
+            return EX_OK
+
         if cfg.dry_run:
             keys = filedicts_to_keys(src_exclude_list, dst_exclude_list)
             for key in keys:
@@ -2713,6 +2717,7 @@ def main():
     optparser.add_option(      "--access_token", dest="access_token", help="AWS Access Token")
 
     optparser.add_option("-n", "--dry-run", dest="dry_run", action="store_true", help="Only show what should be uploaded or downloaded but don't actually do it. May still perform S3 requests to get bucket listings and other information though (only for file transfer commands)")
+    optparser.add_option(      "--diff-info", dest="diff_info", action="store_true", help="Only show what should be uploaded or downloaded but don't actually do it. May still perform S3 requests to get bucket listings and other information though (only for file transfer commands)")
 
     optparser.add_option("-s", "--ssl", dest="use_https", action="store_true", help="Use HTTPS connection when communicating with S3. (default)")
     optparser.add_option(      "--no-ssl", dest="use_https", action="store_false", help="Don't use HTTPS.")
