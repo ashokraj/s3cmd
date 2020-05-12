@@ -127,6 +127,7 @@ class Config(object):
     encrypt = False
     dry_run = False
     diff_info = False
+    upload_list = False
     add_encoding_exts = u""
     preserve_attrs = True
     preserve_attrs_list = [

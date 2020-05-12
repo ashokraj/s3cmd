@@ -1801,8 +1801,16 @@ def cmd_sync_local2remote(args):
         _set_remote_uri(update_list, destination_base, single_file_local)
 
         if cfg.diff_info:
-            output('copy pairs: %s' % copy_pairs[0]['full_name'])
-            output(u"Summary: %d local files to upload, %d files to remote copy, %d remote files to delete" % (upload_count, copy_count, remote_count))
+            print(u'{ "src": "%s", "dest": "%s", "localFilesToUpload": %d , "filesToRemoteCopy": %d , "remoteFilesToDelete": %d, "totalDiff": %d ' % ( args[0], args[1], upload_count, copy_count, remote_count, ( upload_count + copy_count + remote_count)  ))
+            if cfg.upload_list:
+                import json
+                upload_list=[]
+                for key in local_list:
+                    upload_list.append(local_list[key]['full_name'])
+                for key in update_list:
+                    upload_list.append(update_list[key]['full_name'])
+                print (', "upload_list": %s '  % json.dumps(upload_list))
+            print("}")   
             return EX_OK
 
         if cfg.dry_run:
@@ -2719,6 +2727,7 @@ def main():
 
     optparser.add_option("-n", "--dry-run", dest="dry_run", action="store_true", help="Only show what should be uploaded or downloaded but don't actually do it. May still perform S3 requests to get bucket listings and other information though (only for file transfer commands)")
     optparser.add_option(      "--diff-info", dest="diff_info", action="store_true", help="Only show what should be uploaded or downloaded but don't actually do it. May still perform S3 requests to get bucket listings and other information though (only for file transfer commands)")
+    optparser.add_option(      "--upload-list", dest="upload_list", action="store_true", help="Only show what should be uploaded or downloaded but don't actually do it. May still perform S3 requests to get bucket listings and other information though (only for file transfer commands)")
 
     optparser.add_option("-s", "--ssl", dest="use_https", action="store_true", help="Use HTTPS connection when communicating with S3. (default)")
     optparser.add_option(      "--no-ssl", dest="use_https", action="store_false", help="Don't use HTTPS.")
